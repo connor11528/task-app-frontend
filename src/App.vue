@@ -11,40 +11,34 @@
             <div class="col-sm-2 offset-sm-1">
                 <ul class="list-group">
                     <li class="list-group-item d-flex justify-content-between" v-for="item in candidateFormMenu"
-                        :class="{ 'bg-light': item.active, 'lh-condensed': !item.active }">
+                        :class="{ 'bg-light': item.active, 'lh-condensed': !item.active }" @click="setStep(item.step)">
                         <div>
                             <h6 class="my-0">{{ item.name }}</h6>
                         </div>
-                        <span class="text-success text-danger text-muted">
-                    <i class="far fa-circle" v-if="!item.complete && !item.error"></i>
-                    <i class="fas fa-check-circle" v-if="item.complete"></i>
-                    <i class="fas fa-exclamation-triangle" v-if="item.error"></i>
-                </span>
+                        <span class="text-muted" v-if="!item.complete && !item.error">
+                            <i class="far fa-circle"></i>
+                        </span>
+                        <span class="text-success" v-if="item.complete">
+                            <i class="fas fa-check-circle"></i>
+                        </span>
+                        <span class="text-danger" v-if="item.error">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </span>
                     </li>
                 </ul>
             </div>
             <div class="col-sm-6">
-                <div v-if="errors.length">
-                     <div v-for="error in errors" class="alert alert-danger" role="alert">{{ error }}</div>
-
-                </div>
                 <!-- Personal Info -->
                 <form novalidate="" id="personal-info" v-if="step === 1">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label>First name<span class="required">*</span></label>
-                            <input type="text" class="form-control" v-model="candidateInfo.firstName" placeholder="" value=""
+                            <input type="text" class="form-control" v-model="candidateInfo.firstName" placeholder=""
                                    required="">
-                            <div class="invalid-feedback">
-                                Valid first name is required.
-                            </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="lastName">Last name<span class="required">*</span></label>
-                            <input type="text" class="form-control" id="lastName" placeholder="" value="" required="">
-                            <div class="invalid-feedback">
-                                Valid last name is required.
-                            </div>
+                            <label>Last name<span class="required">*</span></label>
+                            <input type="text" class="form-control" v-model="candidateInfo.lastName" placeholder="" value="" required="">
                         </div>
                     </div>
                     <div class="row">
@@ -54,16 +48,13 @@
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">https://linkedin.com/in/</span>
                                 </div>
-                                <input type="text" class="form-control">
+                                <input type="text" class="form-control" v-model="candidateInfo.linkedinUrl">
                             </div>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="email">Email<span class="required">*</span></label>
-                        <input type="email" class="form-control" id="email" placeholder="you@example.com">
-                        <div class="invalid-feedback">
-                            Please enter a valid email address for shipping updates.
-                        </div>
+                        <label>Email<span class="required">*</span></label>
+                        <input type="email" class="form-control" placeholder="you@example.com" v-model="candidateInfo.email">
                     </div>
 
                     <button class="btn btn-light btn-lg pull-right" @click.prevent="nextStep()">Next ></button>
@@ -128,6 +119,11 @@
                     <button class="btn btn-light btn-lg pull-right" @click.prevent="nextStep()">Next ></button>
                 </form>
             </div>
+            <div class="col-sm-2">
+                <div v-if="errors.length">
+                    <div v-for="error in errors" class="alert alert-danger" role="alert">{{ error }}</div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -137,11 +133,15 @@
     }
 </style>
 <script>
+  import _ from 'lodash';
   export default {
     data() {
       return {
         candidateInfo:{
-          firstName: ''
+          firstName: '',
+          lastName: '',
+          email: '',
+          linkedinUrl: ''
         },
         errors: [],
         step: 1,
@@ -156,8 +156,16 @@
       }
     },
     methods: {
+      setErrorStatusFor(name, value = true){
+        let menuIndex = _.findIndex(this.candidateFormMenu, (item) => {
+          return item.name === name;
+        });
+
+        this.candidateFormMenu[menuIndex].error = value;
+        this.candidateFormMenu[menuIndex].complete = !value;
+      },
       validateStep(stepNum) {
-        let validStep;
+        let validStep = false;
         switch (stepNum) {
           case 1:
             validStep = this.validatePersonalInfo();
@@ -179,11 +187,16 @@
         }
         return validStep;
       },
+      setStep(stepNum){
+        this.step = stepNum;
+        this.candidateFormMenu.map((item) => {
+          item.active = (item.step === stepNum);
+          return item;
+        });
+      },
       nextStep() {
         let validForNextStep = this.validateStep(this.step);
-        if (!validForNextStep) {
-          return;
-        }
+        if (!validForNextStep) return;
 
         this.candidateFormMenu.map((item) => {
           item.active = (item.step === this.step + 1);
@@ -194,9 +207,26 @@
       },
 
       validatePersonalInfo() {
+        this.errors = [];
+
         if(!this.candidateInfo.firstName){
           this.errors.push('First name is required');
         }
+        if(!this.candidateInfo.lastName){
+          this.errors.push('Last name is required');
+        }
+        if(!this.candidateInfo.email){
+          this.errors.push('Please enter a valid email address for shipping updates.');
+        }
+
+        if(this.errors.length){
+          this.setErrorStatusFor('Personal Info', true);
+          return false;
+        }
+
+        this.setErrorStatusFor('Personal Info', false);
+        return true;
+
       },
       validateLocation() {
         return true;
