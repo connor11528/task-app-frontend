@@ -57,7 +57,9 @@
                         <input type="email" class="form-control" placeholder="you@example.com" v-model="candidateInfo.email">
                     </div>
 
-                    <button class="btn btn-light btn-lg pull-right" @click.prevent="nextStep()">Next ></button>
+                    <div class="row float-right mr-2">
+                      <button class="btn btn-light btn-lg" @click.prevent="nextStep()">Next ></button>
+                    </div>
                 </div>
 
                 <!-- Location -->
@@ -134,13 +136,16 @@
                             <label>I will relocate to the Bay Area to start a new job there</label>
                             <select class="custom-select d-block w-100" v-model="candidateInfo.relocate">
                                 <option>--</option>
-                                <option value="true">Yes I'm interested in relocating to the Bay or live here already</option>
-                                <option value="false">No I don't live in the Bay and require remote work</option>
+                                <option value="relocate">Yes I'll relocate</option>
+                                <option value="wontrelocate">No I need to be remote</option>
+                                <option value="bayarea">I already live in the Bay Area</option>
                             </select>
                         </div>
                     </div>
-
-                    <button class="btn btn-light btn-lg pull-right" @click.prevent="nextStep()">Next ></button>
+                    <div class="row float-right mr-2">
+                      <button class="btn btn-light btn-lg" @click.prevent="nextStep()">Next ></button>
+                    </div>
+                    
                 </div>
 
                 <!-- Experience -->
@@ -168,23 +173,54 @@
                                 <div class="btn btn-primary" @click.prevent="addWorkHistory()"><i class="fas fa-plus"></i> Add work experience</div>
                             </div>
                         </div>
-
-                        <h3>Education</h3>
-
-                        <button class="btn btn-light btn-lg pull-right" @click.prevent="nextStep()">Next ></button>
                     </div>
-
+                    <div class="row float-right mr-2">
+                      <button class="btn btn-light btn-lg" @click.prevent="nextStep()">Next ></button>
+                    </div>
                 </div>
 
                 <!-- Projects -->
                 <div id="projects" v-if="step === 4">
                     <h3>Projects</h3>
+                    <div class="row" v-for="project in candidateInfo.projects">
+                      <label>Title</label>
+                      <input type='text' class='form-control' v-model='project.title'>
+                      <label>URL</label>
+                      <input type='url' class='form-control' v-model='project.url'>
+                      <label>Description</label>
+                      <textarea class='form-control' v-model='project.description'></textarea>
 
+                      <label>Technologies Used</label>
+                      <input type='text' class='form-control'>
+                    </div>
 
+                    <div class="row float-right mr-2">
+                      <button class="btn btn-light btn-lg" @click.prevent="nextStep()">Next ></button>
+                    </div>
+                </div>
+                <div v-if="step === 5">
+                  <h3>Education</h3>
+                  <div class="row" v-for="education in candidateInfo.education">
+                    <label>School</label>
+                    <input type='text' class='form-control'>
+
+                    <label>Degree</label>
+                    <input type='text' class='form-control'>
+
+                    <label>Start date</label>
+                    <input type='month' class='form-control'>
+
+                    <label>End date</label>
+                    <input type='month' class='form-control'>
+                  </div>
+
+                  <!-- SUBMIT BUTTON -->
+                  <div class="row float-right mr-2">
+                      <button class="btn btn-success btn-lg" @click.prevent="submitForm()">Submit!</button>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-2">
-                <button class="btn btn-success btn-lg pull-right mb-3" @click.prevent="nextStep()">Next ></button>
                 <div v-if="errors.length">
                     <div v-for="error in errors" class="alert alert-danger" role="alert">{{ error }}</div>
                 </div>
@@ -205,12 +241,12 @@
     return { title: '', company: '', startDate: '', endDate: '', description: '' };
   }
 
-  function EducationModel(){
-    return { degree: '', school: '', year_start: '', year_end: '' };
-  }
-
   function ProjectModel(){
     return { title: '', description: '', url: '', technologies_used: [] };
+  }
+
+  function EducationModel(){
+    return { degree: '', school: '', year_start: '', year_end: '' };
   }
 
   export default {
@@ -231,11 +267,11 @@
           workHistory: [
             new WorkHistoryModel()
           ],
-          education: [
-            new EducationModel()
-          ],
           projects: [
             new ProjectModel()
+          ],
+          education: [
+            new EducationModel()
           ]
         },
         errors: [],
@@ -243,14 +279,17 @@
         candidateFormMenu: [
           {active: true, name: 'Personal Info', complete: false, error: false, step: 1},
           {active: false, name: 'Location', complete: false, error: false, step: 2},
-          {active: false, name: 'Experience', complete: false, error: false, step: 3},
+          {active: false, name: 'Work XP', complete: false, error: false, step: 3},
           {active: false, name: 'Projects', complete: false, error: false, step: 4},
-          {active: false, name: 'Share', complete: false, error: false, step: 5}
+          {active: false, name: 'Education', complete: false, error: false, step: 5}
         ],
 
       }
     },
     methods: {
+      submitForm(){
+        console.log('Form submitted to server!');
+      },
       addWorkHistory(){
         this.candidateInfo.workHistory.push(new WorkHistoryModel());
       },
@@ -272,13 +311,13 @@
             validStep = this.validateLocation();
             break;
           case 3:
-            validStep = this.validateExperience();
+            validStep = this.validateWorkExperience();
             break;
           case 4:
             validStep = this.validateProjects();
             break;
           case 5:
-            validStep = this.validateShare();
+            validStep = this.validateEducation();
             break;
           default:
             validStep = false;
@@ -341,13 +380,13 @@
 
         this.displayErrors('Location');
       },
-      validateExperience() {
+      validateWorkExperience() {
         return true;
       },
       validateProjects() {
         return true;
       },
-      validateShare() {
+      validateEducation() {
         return true;
       }
     }
