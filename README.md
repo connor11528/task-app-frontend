@@ -2,6 +2,8 @@
 
 > A Vue.js project
 
+Uses async-await because of a polyfill: https://stackoverflow.com/questions/33527653/babel-6-regeneratorruntime-is-not-defined
+
 ## Build Setup
 
 ``` bash
