@@ -60,6 +60,7 @@
 
         axios.post(`/api/task`, newTask).then((response)=>{
           this.tasks.unshift(response.data.task);
+          this.newTask = '';
         });
       },
       updateTask(taskId, index) {
