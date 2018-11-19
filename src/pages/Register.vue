@@ -1,6 +1,6 @@
 <template>
 	<div class="row">
-		<div class='col'>
+		<div class='offset-md-4 col-md-4'>
 			<h1>Register</h1>
 
 			<ul v-if="errors && errors.length">
@@ -11,12 +11,12 @@
 
 			<div class='form-group'>
 				<label>Email</label>
-				<input type="email" class='form-control'>
+				<input type="email" class='form-control' v-model='email'>
 			</div>
 
 			<div class='form-group'>
 				<label>Password</label>
-				<input type="text" class='form-control'>
+				<input type="password" class='form-control' v-model='password'>
 			</div>
 			
 			<div class="btn btn-success" @click='register'>Submit</div>
