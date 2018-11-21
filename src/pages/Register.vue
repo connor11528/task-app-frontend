@@ -3,11 +3,14 @@
 		<div class='offset-md-4 col-md-4'>
 			<h1>Register</h1>
 
-			<ul v-if="errors && errors.length">
-				<li v-for="error of errors" style='color:red;'>
+			<div v-if="errors && errors.length">
+				<div v-for="error of errors" class='alert alert-danger'>
 			  		{{error.message}}
-				</li>
-			</ul>
+				</div>
+			</div>
+			<div v-if="success">
+				<div class='alert alert-success'>{{ success }}</div>
+			</div>
 
 			<div class='form-group'>
 				<label>Email</label>
@@ -32,7 +35,8 @@ export default {
 		return {
 			email: '',
 			password: '',
-			errors: []
+			errors: [],
+			success: ''
 		}
 	},
 	methods: {
@@ -42,7 +46,10 @@ export default {
 				email: this.email,
 				password: this.password
 			}).then(response => {
-				console.log(response);
+				this.success  = response.data.message;
+				this.email    = '';
+				this.password = '';
+
 			})
 			.catch(e => {
 		    	this.errors.push(e)
