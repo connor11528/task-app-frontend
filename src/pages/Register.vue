@@ -46,14 +46,15 @@ export default {
 				email: this.email,
 				password: this.password
 			}).then(response => {
+
 				this.success  = response.data.message;
 				this.email    = '';
 				this.password = '';
 
 			})
-			.catch(e => {
-		    	this.errors.push(e)
-		    });
+			.catch(error => {
+		    this.errors.push(error.response.data);
+		  });
 		}
 	}
 }
