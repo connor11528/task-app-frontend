@@ -1,4 +1,9 @@
 
 module.exports = {
-	user: null
+	state: {
+		user: null,
+	},
+	login(){
+    
+	}
 };

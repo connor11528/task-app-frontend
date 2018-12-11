@@ -28,6 +28,7 @@
 </template>
 <script>
 import axios from 'axios'
+import store from '../store'
 
 export default {
 
@@ -47,11 +48,10 @@ export default {
 				password: this.password
 			}).then(response => {
 
-			    console.log(response);
-
-				this.success  = response.data.message;
 				this.email    = '';
 				this.password = '';
+
+
 
 			})
 			.catch(error => {
