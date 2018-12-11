@@ -23,6 +23,7 @@
 	</div>
 </template>
 <script>
+import _ from 'lodash';
 import axios from 'axios';
 
 export default {
@@ -48,8 +49,8 @@ export default {
         EventBus.$emit('login', user);
 
 			}).catch(error => {
-        console.log(error);
-        this.errors.push(error.response)
+        const errorMessage = _.get(error, 'response.data.message');
+        this.errors.push(errorMessage || 'Error logging in');
       });
 		}
 	}

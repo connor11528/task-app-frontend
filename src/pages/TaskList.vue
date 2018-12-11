@@ -10,13 +10,13 @@
 	        </div>
 
 	        <transition-group name="task-list">
-	            <div class="row mb-2" v-for="(task, index) in tasks" :key="task._id">
+	            <div class="row mb-2" v-for="(task, index) in tasks" :key="task.id">
 	                <div class="col-sm-4">
-	                    {{ task.name }}
+	                    {{ task.title }}
 	                </div>
 	                <div class="col-sm-2">
-	                    <span @click='updateTask(task._id, index)' class="task-action"><i class="fas fa-pencil-alt"></i></span>
-	                    <span @click='deleteTask(task._id, index)' class="task-action badge badge-danger badge-pill">X</span>
+	                    <span @click='updateTask(task.id, index)' class="task-action"><i class="fas fa-pencil-alt"></i></span>
+	                    <span @click='deleteTask(task.id, index)' class="task-action badge badge-danger badge-pill">X</span>
 	                </div>
 	            </div>
 	        </transition-group>
@@ -43,8 +43,11 @@
   export default {
   	name: 'TaskListPage',
     created() {
-      axios.get(`/api/task`)
-        .then((response) => this.tasks = response.data );
+      axios.get(`/api/tasks`)
+        .then((response) => {
+          console.log(response);
+          this.tasks = response.data
+        });
     },
     data() {
       return {
@@ -68,7 +71,7 @@
         // todo
       },
       deleteTask(taskId, index) {
-        axios.delete(`/api/task/${taskId}`)
+        axios.delete(`/api/tasks/${taskId}`)
           .then(() => this.tasks.splice(index, 1) );
       }
     },

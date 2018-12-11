@@ -6,7 +6,7 @@
 
 </template>
 <script>
-// todo: verify that the user is logged in
+// todo: verify that the user has a stored token
 
 
 export default {
