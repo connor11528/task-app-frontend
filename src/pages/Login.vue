@@ -37,21 +37,14 @@ export default {
 	},
 	methods: {
 		login(){
-			axios.post('/api/login', {
-				email: this.email,
-				password: this.password
-			}).then((response) => {
+			const { email, password } = this;
 
-        const { token, user } = response.data;
+			this.$store.dispatch('login', { email, password })
+				.then(() => {
+					this.$router.push('/dashboard');
+				})
+        .catch(err => this.errors.push(err));
 
-        Object.assign(user, { token });
-				
-        EventBus.$emit('login', user);
-
-			}).catch(error => {
-        const errorMessage = _.get(error, 'response.data.message');
-        this.errors.push(errorMessage || 'Error logging in');
-      });
 		}
 	}
 }
