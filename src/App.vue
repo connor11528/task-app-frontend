@@ -23,7 +23,7 @@
 <script>
 
 export default {
-  computed(){
+  computed: {
     isLoggedIn(){ 
       return this.$store.getters.isLoggedIn;
     }
