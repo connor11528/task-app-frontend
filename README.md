@@ -16,3 +16,8 @@ npm run build
 ```
 
 For detailed explanation on how things work, consult the [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
+
+## Info
+
+- We are using `babel-polyfill` in order to make async/await work on the frontend: https://stackoverflow.com/a/33527883/2031033

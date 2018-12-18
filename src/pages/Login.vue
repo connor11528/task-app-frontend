@@ -23,7 +23,6 @@
 	</div>
 </template>
 <script>
-import _ from 'lodash';
 import axios from 'axios';
 
 export default {
@@ -40,11 +39,12 @@ export default {
 			const { email, password } = this;
 
 			this.$store.dispatch('login', { email, password })
-				.then(() => {
+				.then((res) => {
 					this.$router.push('/dashboard');
 				})
-        .catch(err => this.errors.push(err));
-
+        .catch(error => {
+        	this.errors.push(error)
+        });
 		}
 	}
 }

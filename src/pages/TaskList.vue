@@ -10,13 +10,13 @@
 	        </div>
 
 	        <transition-group name="task-list">
-	            <div class="row mb-2" v-for="(task, index) in tasks" :key="task.id">
+	            <div class="row mb-2" v-for="(task, index) in tasks" :key="task._id">
 	                <div class="col-sm-4">
-	                    {{ task.title }}
+	                    {{ task.name }}
 	                </div>
 	                <div class="col-sm-2">
-	                    <span @click='updateTask(task.id, index)' class="task-action"><i class="fas fa-pencil-alt"></i></span>
-	                    <span @click='deleteTask(task.id, index)' class="task-action badge badge-danger badge-pill">X</span>
+	                    <span @click='updateTask(task._id, index)' class="task-action"><i class="fas fa-pencil-alt"></i></span>
+	                    <span @click='deleteTask(task._id, index)' class="task-action badge badge-danger badge-pill">X</span>
 	                </div>
 	            </div>
 	        </transition-group>
@@ -45,8 +45,8 @@
     created() {
       axios.get(`/api/tasks`)
         .then((response) => {
-          console.log(response);
           this.tasks = response.data
+          console.log(this.tasks);
         });
     },
     data() {
