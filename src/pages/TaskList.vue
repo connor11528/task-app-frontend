@@ -24,8 +24,9 @@
 	</div>
 </template>
 <style>
-    .task-action { cursor: pointer; }
-
+    .task-action { 
+      cursor: pointer; 
+    }
     .task-list-item {
         display: inline-block;
         margin-right: 10px;
@@ -33,7 +34,7 @@
     .task-list-enter-active, .task-list-leave-active {
         transition: opacity .5s;
     }
-    .task-list-enter, .task-list-leave-to /* .list-leave-active below version 2.1.8 */ {
+    .task-list-enter, .task-list-leave-to {
         opacity: 0;
     }
 </style>

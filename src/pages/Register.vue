@@ -5,21 +5,16 @@
 
 			<div v-if="errors && errors.length">
 				<div v-for="error of errors" class='alert alert-danger'>
-			  		{{error.message}}
+			  		{{ error }}
 				</div>
 			</div>
 			<div v-if="success">
-				<div class='alert alert-success'>{{ success }}</div>
+				<div class='alert alert-success'>✅ {{ success }}</div>
 			</div>
 
 			<div class='form-group'>
 				<label>Email</label>
 				<input type="email" class='form-control' v-model='email'>
-			</div>
-
-			<div class='form-group'>
-				<label>Password</label>
-				<input type="password" class='form-control' v-model='password'>
 			</div>
 			
 			<div class="btn btn-success" @click='register'>Submit</div>
@@ -35,28 +30,22 @@ export default {
 	data(){
 		return {
 			email: '',
-			password: '',
 			errors: [],
-			success: ''
+			success: false
 		}
 	},
 	methods: {
 		register(){
+			const { email } = this;
 
-			axios.post('/api/register', {
-				email: this.email,
-				password: this.password
-			}).then(response => {
-
-				this.email    = '';
-				this.password = '';
-
-
-
-			})
-			.catch(error => {
-		    this.errors.push(error.response.data);
-		  });
+			this.$store.dispatch('register', { email })
+				.then((response) => {
+					this.success = response;
+					this.email   = '';
+				})
+		    .catch(error => {
+		    	this.errors.push(error)
+		    });
 		}
 	}
 }

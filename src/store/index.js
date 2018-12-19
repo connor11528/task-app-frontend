@@ -29,12 +29,9 @@ export const store = new Vuex.Store({
     async register(context, payload) {
       try {
         const registerResponse = await axios.post('/api/register', payload);
-        const { token, user } = registerResponse.data;
 
-        context.commit('authenticate', token, user);
+        return Promise.resolve(_.get(registerResponse, 'data.message'));
 
-        return Promise.resolve();
-        
       } catch (error) {
         // 400 responses are passed to axios catch in error.response
         return Promise.reject(_.get(error.response, 'data.message'));
