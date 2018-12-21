@@ -9,7 +9,8 @@ Vue.use(Vuex);
 export const store = new Vuex.Store({
   state: {
     token: localStorage.getItem(constants.LOCALSTORAGE_TOKEN_KEY) || null,
-    user: {}
+    user: {},
+    tasks: []
   },
   mutations: {
     authenticate(state, token, user){
@@ -49,6 +50,9 @@ export const store = new Vuex.Store({
       } catch (error) {
         return Promise.reject(_.get(error.response, 'data.message'));
       }
+    },
+    async getTasks() {
+
     }
 
   },

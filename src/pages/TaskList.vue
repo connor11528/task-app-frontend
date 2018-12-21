@@ -8,13 +8,14 @@
 	                <input type="text" class="form-control" placeholder="Add task..." v-model="newTask" @keyup.enter="addTask">
 	            </div>
 	        </div>
+			<pre>{{ isLoggedIn }}</pre>
 
 	        <transition-group name="task-list">
 	            <div class="row mb-2" v-for="(task, index) in tasks" :key="task._id">
 	                <div class="col-sm-4">
 	                    {{ task.name }}
 	                </div>
-	                <div class="col-sm-2">
+	                <div class="col-sm-2" ng-if="isLoggedIn">
 	                    <span @click='updateTask(task._id, index)' class="task-action"><i class="fas fa-pencil-alt"></i></span>
 	                    <span @click='deleteTask(task._id, index)' class="task-action badge badge-danger badge-pill">X</span>
 	                </div>
@@ -40,6 +41,7 @@
 </style>
 <script>
   import axios from 'axios';
+  import { mapGetters } from 'vuex'
 
   export default {
   	name: 'TaskListPage',
@@ -47,7 +49,6 @@
       axios.get(`/api/tasks`)
         .then((response) => {
           this.tasks = response.data
-          console.log(this.tasks);
         });
     },
     data() {
@@ -77,6 +78,9 @@
       }
     },
     computed: {
+      ...mapGetters([
+		'isLoggedIn',
+	  ]),
       taskListCount(){
         return this.tasks.length;
       }
