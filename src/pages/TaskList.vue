@@ -1,88 +1,96 @@
 <template>
-	<div class="row">
-	    <div class="col-sm-12 offset-sm-1 mt-4">
-	        <h1>Task List</h1>
-	        <p>{{taskListCount}} tasks</p>
-	        <div class="row">
-	            <div class="col-sm-4 mb-2">
-	                <input type="text" class="form-control" placeholder="Add task..." v-model="newTask" @keyup.enter="addTask">
-	            </div>
-	        </div>
-			<pre>{{ isLoggedIn }}</pre>
-
-	        <transition-group name="task-list">
-	            <div class="row mb-2" v-for="(task, index) in tasks" :key="task._id">
-	                <div class="col-sm-4">
-	                    {{ task.name }}
-	                </div>
-	                <div class="col-sm-2" ng-if="isLoggedIn">
-	                    <span @click='updateTask(task._id, index)' class="task-action"><i class="fas fa-pencil-alt"></i></span>
-	                    <span @click='deleteTask(task._id, index)' class="task-action badge badge-danger badge-pill">X</span>
-	                </div>
-	            </div>
-	        </transition-group>
-	    </div>
-	</div>
+    <div class="row">
+        <div class="col-sm-12 offset-sm-1 mt-4">
+            <h1>All Tasks</h1>
+            <div class="flex-column w-50 mb-5" v-if="isLoggedIn">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Task name" v-model="newTask.name"
+                           @keyup.enter="addTask">
+                </div>
+                <div class="form-group">
+                    <textarea class="form-control" placeholder="Task description" v-model="newTask.description"
+                              @keyup.enter="addTask"></textarea>
+                </div>
+            </div>
+            <p>Displaying {{taskListCount}} tasks</p>
+            <transition-group name="task-list">
+                <div class="list-group" v-for="(task, index) in tasks" :key="task._id">
+                    <div class="list-group-item list-group-item-action flex-column align-items-start d-flex w-50">
+                        <div class="justify-content-between">
+                            <h5 class="mb-1">{{task.name}}</h5>
+                            <small @click='removeTask(task._id, index)'
+                                  class="text-muted pointer" v-if="isLoggedIn">Delete</small>
+                        </div>
+                        <p class="mb-1">{{task.description}}</p>
+                    </div>
+                </div>
+            </transition-group>
+        </div>
+    </div>
 </template>
 <style>
-    .task-action { 
-      cursor: pointer; 
+    .pointer {
+        cursor: pointer;
     }
+
     .task-list-item {
         display: inline-block;
         margin-right: 10px;
     }
+
     .task-list-enter-active, .task-list-leave-active {
         transition: opacity .5s;
     }
+
     .task-list-enter, .task-list-leave-to {
         opacity: 0;
     }
 </style>
 <script>
-  import axios from 'axios';
-  import { mapGetters } from 'vuex'
+  import _ from 'lodash';
+  import {mapGetters, mapState} from 'vuex'
 
   export default {
-  	name: 'TaskListPage',
+    name: 'TaskListPage',
     created() {
-      axios.get(`/api/tasks`)
-        .then((response) => {
-          this.tasks = response.data
-        });
+      this.$store.dispatch('getTaskList');
     },
     data() {
       return {
-        tasks: [],
-        newTask: ''
+        newTask: {
+          name: '',
+          description: '',
+        }
       }
     },
     methods: {
-      addTask(){
-        const newTask = {
-          name: this.newTask,
-          description: ''
-        };
-
-        axios.post(`/api/task`, newTask).then((response)=>{
-          this.tasks.unshift(response.data.task);
-          this.newTask = '';
+      addTask() {
+        this.$store.dispatch('addTask', {
+          name: this.newTask.name,
+          description: this.newTask.description,
+        }).then(() => {
+          this.newTask = {
+            name: '',
+            description: '',
+          }
         });
       },
-      updateTask(taskId, index) {
-        // todo
-      },
-      deleteTask(taskId, index) {
-        axios.delete(`/api/tasks/${taskId}`)
-          .then(() => this.tasks.splice(index, 1) );
+      removeTask(taskId, index) {
+        this.$store.dispatch('removeTask', {
+          taskId,
+          index
+        });
       }
     },
     computed: {
       ...mapGetters([
-		'isLoggedIn',
-	  ]),
-      taskListCount(){
-        return this.tasks.length;
+        'isLoggedIn',
+      ]),
+      ...mapState([
+        'tasks'
+      ]),
+      taskListCount() {
+        return _.get(this.$store, 'state.tasks.length');
       }
     }
   }

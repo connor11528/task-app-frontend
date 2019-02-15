@@ -10,7 +10,7 @@ export const store = new Vuex.Store({
   state: {
     token: localStorage.getItem(constants.LOCALSTORAGE_TOKEN_KEY) || null,
     user: {},
-    tasks: []
+    tasks: [],
   },
   mutations: {
     authenticate(state, token, user){
@@ -24,6 +24,15 @@ export const store = new Vuex.Store({
       state.user  = {};
 
       localStorage.set(constants.LOCALSTORAGE_TOKEN_KEY, '');
+    },
+    SET_TASKS(state, tasks) {
+      state.tasks = tasks;
+    },
+    ADD_TASK(state, task) {
+      state.tasks.unshift(task);
+    },
+    REMOVE_TASK(state, index) {
+      state.tasks.splice(index, 1);
     }
   },
   actions: {
@@ -51,13 +60,27 @@ export const store = new Vuex.Store({
         return Promise.reject(_.get(error.response, 'data.message'));
       }
     },
-    async getTasks() {
-
+    async getTaskList({ commit }) {
+      axios.get('/api/tasks')
+        .then((response) => {
+          commit('SET_TASKS', response.data);
+        });
+    },
+    async addTask({ commit }, newTask) {
+      axios.post('/api/tasks', newTask)
+        .then((response) => {
+          commit('ADD_TASK', _.get(response.data,'task'));
+        });
+    },
+    async removeTask({ commit }, { taskId, index }) {
+      axios.delete(`/api/tasks/${taskId}`)
+        .then(() =>  {
+          commit('REMOVE_TASK', index);
+        });
     }
-
   },
   getters: {
     isLoggedIn: state => !!state.token,
     authStatus: state => state.status
-  }
+  },
 });
